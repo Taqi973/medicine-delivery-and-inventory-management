@@ -1,13 +1,13 @@
+require('dotenv').config();
 const mysql = require('mysql2');
 
 // Create Database Connection
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'world123!', 
-    database: 'uog_care_db'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
-
 // Connect to MySQL
 db.connect((err) => {
     if (err) {
