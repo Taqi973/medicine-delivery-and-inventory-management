@@ -1,13 +1,14 @@
+require('dotenv').config(); // 1. Unlocks the secret vault
 const fs = require('fs'); // Node's built-in File System tool
 const csv = require('csv-parser'); // The tool we just installed
 const mysql = require('mysql2');
 
-// 1. Connect to your vault
+// 2. Connect to your database using the hidden variables
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "world123!", // CHANGE THIS to your MySQL password!
-    database: "uog_care_db"
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -16,7 +17,7 @@ db.connect((err) => {
 
     const medicinesToInsert = [];
 
-    // 2. Open the CSV file and read it line by line
+    // 3. Open the CSV file and read it line by line
     fs.createReadStream('Pakistan Medicines Dataset.csv')
         .pipe(csv())
         .on('data', (row) => {
@@ -53,7 +54,7 @@ db.connect((err) => {
         .on('end', () => {
             console.log(`Successfully parsed ${medicinesToInsert.length} medicines from the CSV!`);
 
-            // 3. Inject all the data into MySQL!
+            // 4. Inject all the data into MySQL!
             const sql = "INSERT INTO medicines (name, category, description, price, stock_quantity, batch_number, expiry_date) VALUES ?";
             
             db.query(sql, [medicinesToInsert], (err, result) => {
