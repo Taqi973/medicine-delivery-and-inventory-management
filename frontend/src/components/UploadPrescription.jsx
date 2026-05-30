@@ -31,8 +31,13 @@ function UploadPrescription() {
     }
 
     const formData = new FormData();
-    formData.append('prescription', file);
-    // Append customer details from local storage so the backend knows who uploaded it
+    
+    // FIX 1: The key MUST be 'prescriptionImage' to match backend Multer
+    formData.append('prescriptionImage', file); 
+    
+    // FIX 2: Backend strictly checks for req.body.userId
+    formData.append('userId', user.id || user._id || ''); 
+    
     formData.append('customer_name', user.name || 'User');
     formData.append('phone', user.phone || 'N/A');
     formData.append('address', user.address || 'N/A');
@@ -41,8 +46,8 @@ function UploadPrescription() {
     const loadingToast = toast.loading("Securely uploading prescription...");
 
     try {
-      // Assuming this is your existing backend endpoint for prescriptions
-      await axios.post('http://localhost:8080/api/prescriptions', formData, {
+      // FIX 3: Path updated to match /api/prescriptions in server.js + /upload in router
+      await axios.post('http://localhost:8080/api/prescriptions/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
